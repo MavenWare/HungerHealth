@@ -1,0 +1,4 @@
+name: HungerHealth
+version: '${project.version}'
+main: me.sintaxlabs.hungerhealth.main
+api-version: '1.21'

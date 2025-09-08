@@ -1,0 +1,4 @@
+name: HungerHealth
+version: '1.0'
+main: me.sintaxlabs.hungerhealth.main
+api-version: '1.21'
