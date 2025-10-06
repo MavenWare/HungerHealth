@@ -1,5 +1,9 @@
 package me.sintaxlabs.hungerhealth;
 
+//Date: Oct 5, 2025
+//Vers: 1.0.1
+
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -16,7 +20,14 @@ public final class main extends JavaPlugin implements Listener
     @Override
     public void onEnable()
     {
+        saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
+        Global.configToggleHardMode = this.getConfig().getBoolean("HardMode");
+    }
+
+    public static class Global
+    {
+        public static boolean configToggleHardMode;
     }
 
     // Get exhausted? Set health to hunger.
@@ -26,7 +37,8 @@ public final class main extends JavaPlugin implements Listener
         Entity entity = e.getEntity();
         if (entity instanceof Player)
         {
-            Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHealthToHunger1(e), 1L);
+            Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHealthToHunger1(e), 2L);
+            //ConvertHealthToHunger1(e);
         }
     }
 
@@ -34,12 +46,12 @@ public final class main extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void painEvent(PlayerItemConsumeEvent e)
     {
-        Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHealthToHunger2(e), 1L);
+        Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHealthToHunger2(e), 2L);
+        //ConvertHealthToHunger2(e);
     }
 
 
-
-    // Get hurt by mob? Set hunger to health.
+    // Got Hurt? Set hunger to health.
     @EventHandler(priority = EventPriority.HIGHEST)
     public void painEvent(EntityDamageEvent e)
     {
@@ -47,6 +59,7 @@ public final class main extends JavaPlugin implements Listener
         if (entity instanceof Player)
         {
             Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHungerToHealth(e.getEntity()), 1L);
+            //ConvertHungerToHealth(e.getEntity());
         }
     }
 
@@ -57,36 +70,46 @@ public final class main extends JavaPlugin implements Listener
         Entity entity = e.getEntity();
         if (entity instanceof Player)
         {
-            Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHungerToHealth(e.getEntity()), 1L);
+            Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHungerToHealth(e.getEntity()), 2L);
+            //ConvertHungerToHealth(e.getEntity());
         }
     }
 
     private static void ConvertHealthToHunger1(EntityExhaustionEvent e)
     {
         Player player = (Player) e.getEntity();
+        if (player.getHealth() <= 0) return;
+        if (player.getHealth() > 20) return;
+
         float hunger = player.getFoodLevel();
         player.setHealth(hunger);
-        player.setSaturation(0);
+        if (Global.configToggleHardMode) player.setSaturation(0);
+
     }
     private static void ConvertHealthToHunger2(PlayerItemConsumeEvent e)
     {
         Player player = e.getPlayer();
+        if (player.getHealth() <= 0) return;
+        if (player.getHealth() > 20) return;
+
         float hunger = player.getFoodLevel();
         player.setHealth(hunger);
-        player.setSaturation(0);
+        if (Global.configToggleHardMode) player.setSaturation(0);
     }
 
     private static void ConvertHungerToHealth(Entity e)
     {
         Player player = (Player) e;
-        //player.setSaturatedRegenRate(0);
+        if (player.getHealth() <= 0) return;
+
         float health = (float) player.getHealth();
         player.setFoodLevel((int) health);
-        player.setSaturation(0);
+        if (Global.configToggleHardMode) player.setSaturation(0);
     }
     
     @Override
-    public void onDisable() {
+    public void onDisable()
+    {
         // Plugin shutdown logic
     }
 }
