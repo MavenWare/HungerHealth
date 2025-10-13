@@ -6,7 +6,7 @@
 
   <groupId>me.sintaxlabs</groupId>
   <artifactId>HungerHealth</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <packaging>jar</packaging>
 
   <name>HungerHealth</name>

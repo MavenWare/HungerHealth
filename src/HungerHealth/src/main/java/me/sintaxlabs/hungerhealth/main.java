@@ -1,8 +1,15 @@
 package me.sintaxlabs.hungerhealth;
 
-//Date: Oct 5, 2025
-//Vers: 1.0.1
+/*
+    MavenWare Development
+    Version: 1.0.2
+    Date: October 12, 2025
 
+    Follow applicable laws for Apache 2.0.
+
+    @jammingcat21 - Discord
+    Github.com/MavenWare
+*/
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -11,7 +18,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class main extends JavaPlugin implements Listener
@@ -30,67 +36,44 @@ public final class main extends JavaPlugin implements Listener
         public static boolean configToggleHardMode;
     }
 
-    // Get exhausted? Set health to hunger.
+    // Food level can change from exhaustion, hunger, potions, etc.
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void hungerEvent(EntityExhaustionEvent e)
+    public void foodEvent(FoodLevelChangeEvent e)
     {
         Entity entity = e.getEntity();
         if (entity instanceof Player)
         {
-            Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHealthToHunger1(e), 2L);
-            //ConvertHealthToHunger1(e);
+            Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(this.getClass()), () -> ConvertHealthToHunger(e.getEntity()), 1L);
         }
-    }
-
-    // Eating? Set health to hunger.
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void painEvent(PlayerItemConsumeEvent e)
-    {
-        Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHealthToHunger2(e), 2L);
-        //ConvertHealthToHunger2(e);
     }
 
 
     // Got Hurt? Set hunger to health.
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void painEvent(EntityDamageEvent e)
+    public void healthEvent1(EntityDamageEvent e)
     {
         Entity entity = e.getEntity();
         if (entity instanceof Player)
         {
             Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHungerToHealth(e.getEntity()), 1L);
-            //ConvertHungerToHealth(e.getEntity());
         }
     }
 
     //Healing? Set hunger to health.
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void painEvent(EntityRegainHealthEvent e)
+    public void healthEvent2(EntityRegainHealthEvent e)
     {
         Entity entity = e.getEntity();
         if (entity instanceof Player)
         {
             Bukkit.getScheduler().runTaskLater(JavaPlugin.getProvidingPlugin(getClass()), () -> ConvertHungerToHealth(e.getEntity()), 2L);
-            //ConvertHungerToHealth(e.getEntity());
         }
     }
 
-    private static void ConvertHealthToHunger1(EntityExhaustionEvent e)
+    private static void ConvertHealthToHunger(Entity e)
     {
-        Player player = (Player) e.getEntity();
-        if (player.getHealth() <= 0) return;
-        if (player.getHealth() > 20) return;
-
-        float hunger = player.getFoodLevel();
-        player.setHealth(hunger);
-        if (Global.configToggleHardMode) player.setSaturation(0);
-
-    }
-    private static void ConvertHealthToHunger2(PlayerItemConsumeEvent e)
-    {
-        Player player = e.getPlayer();
-        if (player.getHealth() <= 0) return;
-        if (player.getHealth() > 20) return;
+        Player player = (Player)e;
+        if (player.getHealth() <= 0 || player.getHealth() > 20) return;
 
         float hunger = player.getFoodLevel();
         player.setHealth(hunger);
