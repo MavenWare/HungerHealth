@@ -9,3 +9,6 @@
 # Hard Mode sets saturation to zero every time you heal, take damage, or eat.
 # Makes the plugin more effective in bringing down health/hunger.
 HardMode: true
+
+# Set to TRUE if your server has a plugin that increases health beyond 10 Hearts.
+MoreHealthPlugins: false
