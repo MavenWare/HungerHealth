@@ -31,13 +31,11 @@ public final class main extends JavaPlugin implements Listener
         saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
         Global.configToggleHardMode = this.getConfig().getBoolean("HardMode");
-        Global.configToggleMoreHealthPlugins = this.getConfig().getBoolean("MoreHealthPlugins");
     }
 
     public static class Global
     {
         public static boolean configToggleHardMode;
-        public static boolean configToggleMoreHealthPlugins;
     }
 
     // Food level can change from exhaustion, hunger, potions, etc.
@@ -103,9 +101,13 @@ public final class main extends JavaPlugin implements Listener
     private static void ConvertHealthToHunger(Entity e)
     {
         Player player = (Player) e;
-        if (player.getHealth() <= 0) return;
+        if (player.getHealth() <= 0)
+        {
+            player.setFoodLevel(0);
+            return;
+        }
 
-        if (!Global.configToggleMoreHealthPlugins && player.getHealth() > 20)
+        if (player.getHealth() > 20)
         {
             player.setHealth(20);
         }
@@ -122,7 +124,11 @@ public final class main extends JavaPlugin implements Listener
     private static void ConvertHungerToHealth(Entity e)
     {
         Player player = (Player) e;
-        if (player.getHealth() <= 0) return;
+        if (player.getHealth() <= 0)
+        {
+            player.setFoodLevel(0);
+            return;
+        }
 
         double health = player.getHealth();
         player.setFoodLevel((int) health);
