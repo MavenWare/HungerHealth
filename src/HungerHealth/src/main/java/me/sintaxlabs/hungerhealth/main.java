@@ -101,6 +101,8 @@ public final class main extends JavaPlugin implements Listener
     private static void ConvertHealthToHunger(Entity e)
     {
         Player player = (Player) e;
+        if (Global.configToggleHardMode) player.setSaturation(1);
+
         if (player.getHealth() <= 0)
         {
             player.setFoodLevel(0);
@@ -110,6 +112,8 @@ public final class main extends JavaPlugin implements Listener
         if (player.getHealth() > 20)
         {
             player.setHealth(20);
+            player.setFoodLevel(20);
+            return;
         }
 
         double hunger = player.getFoodLevel();
@@ -117,16 +121,23 @@ public final class main extends JavaPlugin implements Listener
 
         double health = player.getHealth();
         player.setFoodLevel((int) health);
-
-        if (Global.configToggleHardMode) player.setSaturation(0);
     }
 
     private static void ConvertHungerToHealth(Entity e)
     {
         Player player = (Player) e;
+        if (Global.configToggleHardMode) player.setSaturation(1);
+
         if (player.getHealth() <= 0)
         {
             player.setFoodLevel(0);
+            return;
+        }
+
+        if (player.getFoodLevel() > 20)
+        {
+            player.setHealth(20);
+            player.setFoodLevel(20);
             return;
         }
 
@@ -135,7 +146,6 @@ public final class main extends JavaPlugin implements Listener
 
         double hunger = player.getFoodLevel();
         player.setHealth(hunger);
-        if (Global.configToggleHardMode) player.setSaturation(0);
     }
     
     @Override
