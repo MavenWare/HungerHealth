@@ -3,7 +3,7 @@ package me.sintaxlabs.hungerhealth;
 /*
     MavenWare Development
     Version: 1.0.3
-    Date: November 5, 2025
+    Date: November 8, 2025
 
     Follow applicable laws for Apache 2.0.
 
@@ -65,6 +65,9 @@ public final class main extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void healthEvent2(EntityRegainHealthEvent e)
     {
+        // This prevents natural health gen because you end up stuck at 9.5 hearts for infinity.
+        if (e.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED) return;
+
         Entity entity = e.getEntity();
         if (entity instanceof Player)
         {
@@ -73,7 +76,7 @@ public final class main extends JavaPlugin implements Listener
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerJoin(EntityExhaustionEvent e)
+    public void playerExhaustion(EntityExhaustionEvent e)
     {
         Entity entity = e.getEntity();
         if (entity instanceof Player)
@@ -84,6 +87,7 @@ public final class main extends JavaPlugin implements Listener
 
     }
 
+    // Force updates the player to have zero sat if hardmode is enabled.
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRespawn(PlayerRespawnEvent e)
     {
@@ -91,6 +95,7 @@ public final class main extends JavaPlugin implements Listener
         if (Global.configToggleHardMode) player.setSaturation(0);
     }
 
+    // Force updates new players to have zero sat if hardmode is enabled.
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerJoin(PlayerJoinEvent e)
     {
@@ -98,17 +103,22 @@ public final class main extends JavaPlugin implements Listener
         if (Global.configToggleHardMode) player.setSaturation(0);
     }
 
+    // There has to be two methods. One for health related changes and the other for hunger.
+    // If you try to force all events to run off the same method, the player is basically in godmode.
+
     private static void ConvertHealthToHunger(Entity e)
     {
         Player player = (Player) e;
-        if (Global.configToggleHardMode) player.setSaturation(1);
-
         if (player.getHealth() <= 0)
         {
             player.setFoodLevel(0);
             return;
         }
 
+        // Gives the player a sliver of saturation so when they eat to completion,
+        // they stay at 20 hearts/food for a short time...
+        if (Global.configToggleHardMode) player.setSaturation(1);
+        // Fixes a random exception error. Idk if hunger or health is the culprit.
         if (player.getHealth() > 20)
         {
             player.setHealth(20);
@@ -126,14 +136,16 @@ public final class main extends JavaPlugin implements Listener
     private static void ConvertHungerToHealth(Entity e)
     {
         Player player = (Player) e;
-        if (Global.configToggleHardMode) player.setSaturation(1);
-
         if (player.getHealth() <= 0)
         {
             player.setFoodLevel(0);
             return;
         }
 
+        // Gives the player a sliver of saturation so when they eat to completion,
+        // they stay at 20 hearts/food for a short time...
+        if (Global.configToggleHardMode) player.setSaturation(1);
+        // Fixes a random exception error. Idk if hunger or health is the culprit.
         if (player.getFoodLevel() > 20)
         {
             player.setHealth(20);
