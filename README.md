@@ -10,4 +10,8 @@ Minecraft plugin that ties health to hunger and hunger to health
 
 
 ## Disclaimer
-- Free to use and distribute but credit must be given from any redistribution of code.
+- If you paid for this, you were scammed.
+- Do not place this or its code behind paywalls.
+- I am not responsible for any nefarious redistributions. 
+- Credit or Link must be provided if distributed in any form.
+- You are free to share or use code but credit must be provided.
